@@ -7,8 +7,13 @@ pipeline{
         docker_hub_password = credentials('docker_hub')
         telegram_token = credentials('Telegram_Token')
         telegram_chatID = credentials('Telegram_ChatID')
+        cloudflare_email = credentials('rithery11@gmail.com')
+        cloudflare_api_key = credentials('cloudflare_api_key')
+        SERVER_IP = '165.22.241.82'
+        DOMAIN = 'api.rithe.cloud'
+        ROOT_DOMAIN = 'rithe.cloud'
         PROJECT_NAME = 'NestJS Mongo'
-        SERVICE_NAME = 'NestJS Mongo API'
+        SERVICE_NAME = 'API'
     }
     parameters {
         choice(name: 'APP_ENV', choices: ['uat','preprod','prod'], description: 'Please choose enviroment to build')
@@ -42,6 +47,73 @@ pipeline{
                                             docker-compose up -d --build;\
                                             sed -i 's/${APP_ENV}-${BUILD_NUMBER}/1/g' .env"
                 """
+            }
+        }
+        stage("Install Nginx") {
+            steps {
+                script {
+                    sh """
+                        ssh root@${SERVER_IP} "apt update && \
+                                              apt install nginx && \
+                                              ufw disable && \
+                                              ufw status"
+                    """
+                }
+            }
+        }
+        stage("Configure Nginx for Domain") {
+            steps {
+                script {
+                    sh """
+                        ssh root@${SERVER_IP} "echo 'server {
+                            listen 80;
+                            server_name ${DOMAIN};
+
+                            location / {
+                                proxy_set_header Host \$host;
+                                proxy_pass http://localhost:3000;
+                            }
+                        }' > /etc/nginx/sites-available/${DOMAIN} && \
+                        ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/ && \
+                        nginx -t && \
+                        systemctl reload nginx"
+                    """
+                }
+            }
+        }
+        stage("Install Certbot and Setup SSL") {
+            steps {
+                script {
+                    sh """
+                        ssh root@${SERVER_IP} "apt-get install -y certbot python3-certbot-nginx && \
+                                              certbot --nginx -d ${DOMAIN} && \
+                                              systemctl reload nginx"
+                    """
+                }
+            }
+        }
+        stage("Configure Cloudflare") {
+            steps {
+                script {
+                    sh """
+                        curl -X POST "https://api.cloudflare.com/client/v4/zones" \
+                            -H "X-Auth-Email: ${cloudflare_email}" \
+                            -H "X-Auth-Key: ${cloudflare_api_key}" \
+                            -H "Content-Type: application/json" \
+                            --data '{"name":"${ROOT_DOMAIN}"}'
+
+                        ZONE_ID=\$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=${ROOT_DOMAIN}" \
+                            -H "X-Auth-Email: ${cloudflare_email}" \
+                            -H "X-Auth-Key: ${cloudflare_api_key}" \
+                            -H "Content-Type: application/json" | jq -r '.result[0].id')
+
+                        curl -X POST "https://api.cloudflare.com/client/v4/zones/\${ZONE_ID}/dns_records" \
+                            -H "X-Auth-Email: ${cloudflare_email}" \
+                            -H "X-Auth-Key: ${cloudflare_api_key}" \
+                            -H "Content-Type: application/json" \
+                            --data '{"type":"A","name":"${DOMAIN}","content":"${SERVER_IP}","ttl":120,"proxied":true}'
+                    """
+                }
             }
         }
     }
