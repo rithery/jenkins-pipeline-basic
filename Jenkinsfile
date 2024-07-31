@@ -4,7 +4,7 @@ pipeline{
         git_repo = "https://github.com/rithery/jenkins-pipeline-basic"
     }
     parameters {
-        choice(name: 'APP Enviroment', choices: ['uat','preprod','prod'], destination: 'Please choose enviroment to build')
+        choice(name: 'APP Enviroment', choices: ['uat','preprod','prod'], description: 'Please choose enviroment to build')
     }
     stages{
         stage("Configure"){
