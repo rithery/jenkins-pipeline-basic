@@ -73,10 +73,12 @@ pipeline{
                                 proxy_set_header Host \$host;
                                 proxy_pass http://localhost:3000;
                             }
-                        }' > /etc/nginx/sites-available/${DOMAIN} && \
-                        ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/ && \
-                        nginx -t && \
-                        systemctl reload nginx"
+                        }' > /etc/nginx/sites-available/${DOMAIN}"
+
+                        ssh root@${SERVER_IP} "[ -L /etc/nginx/sites-enabled/${DOMAIN} ] && rm /etc/nginx/sites-enabled/${DOMAIN}"
+                        ssh root@${SERVER_IP} "ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/${DOMAIN} && \
+                                               nginx -t && \
+                                               systemctl reload nginx"
                     """
                 }
             }
