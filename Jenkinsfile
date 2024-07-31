@@ -2,7 +2,6 @@ pipeline{
     agent any
     environment {
         git_repo = "https://github.com/rithery/jenkins-pipeline-basic"
-        docker_hub_password = crefentails('')
     }
     parameters {
         choice(name: 'APP Enviroment', choices: ['uat','preprod','prod'], destination: 'Please choose enviroment to build')
