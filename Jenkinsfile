@@ -33,7 +33,7 @@ pipeline{
                 """
             }
         }
-        stage("Deploy UAT"){
+        stage("Deploy"){
             steps{
                 sh """
                     ssh root@165.22.241.82 "cd /srv;\
