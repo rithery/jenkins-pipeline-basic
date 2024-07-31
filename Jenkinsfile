@@ -5,9 +5,14 @@ pipeline{
         digitalocean_registry = "registry.digitalocean.com/registry-devops/nestjs-mongodb-basic"
         digitalocean_token = credentials('digitalocean_token')
         docker_hub_password = credentials('docker_hub')
+        telegram_token = credentials('Telegram_Token')
+        telegram_chatID = credentials('Telegram_ChatID')
+        PROJECT_NAME = 'NestJS Mongo'
+        SERVICE_NAME = 'NestJS Mongo API'
     }
     parameters {
         choice(name: 'APP_ENV', choices: ['uat','preprod','prod'], description: 'Please choose enviroment to build')
+        text(name: 'Release_Note', defaultValue: 'Deploy application', description: 'Need your note before click build')
     }
     stages{
         stage("Configure"){
@@ -40,16 +45,22 @@ pipeline{
             }
         }
     }
-                    // docker login -u rithery -p ${docker_hub_password}
     post{
         always{
-            echo "========always========"
-        }
-        success{
-            echo "========pipeline executed successfully ========"
-        }
-        failure{
-            echo "========pipeline execution failed========"
+            script {
+                sh """
+                    curl -s -X POST https://api.telegram.org/bot${telegram_token}/sendMessage\
+                            -d chat_id=${telegram_chatID} \
+                            -d parse_mode="HTML" \
+                            -d text="<b>Stage</b>: Deploy ${PROJECT_NAME} on service ${SERVICE_NAME} \
+                            %0A<b>Status</b>: ${currentBuild.currentResult} \
+                            %0A<b>Version</b>: ${APP_ENV}-${BUILD_NUMBER} \
+                            %0A<b>Environment</b>: ${APP_ENV} \
+                            %0A<b>Application URL</b>: https://jenkins.rithe.cloud \
+                            %0A<b>User Build</b>: ${BUILD_USER} \
+                            %0A<b>Release Note</b>: ${Release_Note} "
+                """
+            }
         }
     }
 }
