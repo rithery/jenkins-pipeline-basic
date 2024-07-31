@@ -53,8 +53,8 @@ pipeline{
             steps {
                 script {
                     sh """
-                        ssh root@${SERVER_IP} "apt update && \
-                                              apt install nginx && \
+                        ssh root@${SERVER_IP} "DEBIAN_FRONTEND=noninteractive apt update && \
+                                              DEBIAN_FRONTEND=noninteractive apt install nginx && \
                                               ufw disable && \
                                               ufw status"
                     """
@@ -85,7 +85,7 @@ pipeline{
             steps {
                 script {
                     sh """
-                        ssh root@${SERVER_IP} "apt-get install -y certbot python3-certbot-nginx && \
+                        ssh root@${SERVER_IP} "DEBIAN_FRONTEND=noninteractive apt install certbot python3-certbot-nginx && \
                                               certbot --nginx -d ${DOMAIN} && \
                                               systemctl reload nginx"
                     """
