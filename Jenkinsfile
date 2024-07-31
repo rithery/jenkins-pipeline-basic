@@ -11,6 +11,7 @@ pipeline{
         stage("Configure"){
             steps{
                 sh """
+                    rm -rf nestjs-mongodb-basic
                     git clone ${git_repo}
                 """
             }
