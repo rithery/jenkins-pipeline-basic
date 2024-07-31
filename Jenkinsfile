@@ -2,6 +2,8 @@ pipeline{
     agent any
     environment {
         git_repo = "https://github.com/rithery/nestjs-mongodb-basic"
+        digitalocean_registry = credentials('digitalocean_registry')
+        digitalocean_token = credentials('digitalocean_token')
         docker_hub_password = credentials('docker_hub')
     }
     parameters {
@@ -20,13 +22,14 @@ pipeline{
             steps{
                 sh """
                     cd nestjs-mongodb-basic
-                    docker build . -t rithery/nestjs-mongo-api:${APP_ENV}-${BUILD_NUMBER}
-                    docker login -u rithery -p ${docker_hub_password}
-                    docker push rithery/nestjs-mongo-api:${APP_ENV}-${BUILD_NUMBER}
+                    docker build . -t ${digitalocean_registry}:${APP_ENV}-${BUILD_NUMBER}
+                    docker login registry.digitalocean.com -u ${digitalocean_token} -p ${digitalocean_token}
+                    docker push ${digitalocean_registry}:${APP_ENV}-${BUILD_NUMBER}
                 """
             }
         }
     }
+                    // docker login -u rithery -p ${docker_hub_password}
     post{
         always{
             echo "========always========"
