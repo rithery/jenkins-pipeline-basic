@@ -31,7 +31,7 @@ pipeline{
         stage("Deploy UAT"){
             steps{
                 sh """
-                    ssh root@209.97.168.1 "cd /srv;\
+                    ssh root@165.22.241.82 "cd /srv;\
                     docker login registry.digitalocean.com -u ${digitalocean_registry}
                     sed -i 's/1/${APP_ENV}-${BUILD_NUMBER}/g'.env;\
                     docker compose up-d-build;\
