@@ -28,6 +28,17 @@ pipeline{
                 """
             }
         }
+        stage("Deploy UAT"){
+            steps{
+                sh """
+                    ssh root@209.97.168.1 "cd /srv;\
+                    docker login registry.digitalocean.com -u ${digitalocean_registry}
+                    sed -i 's/1/${APP_ENV}-${BUILD_NUMBER}/g'.env;\
+                    docker compose up-d-build;\
+                    sed -i 's/${APP_ENV}-${BUILD_NUMBER}/1/g' .env"
+                """
+            }
+        }
     }
                     // docker login -u rithery -p ${docker_hub_password}
     post{
