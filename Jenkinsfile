@@ -32,7 +32,7 @@ pipeline{
             steps{
                 sh """
                     ssh root@165.22.241.82 "cd /srv;\
-                                            docker login registry.digitalocean.com -u ${digitalocean_token} -p ${digitalocean_token}
+                                            docker login registry.digitalocean.com -u ${digitalocean_token} -p ${digitalocean_token}\
                                             sed -i 's/1/${APP_ENV}-${BUILD_NUMBER}/g'.env;\
                                             docker compose up-d --build;\
                                             sed -i 's/${APP_ENV}-${BUILD_NUMBER}/1/g' .env"
