@@ -14,6 +14,7 @@ pipeline{
         ROOT_DOMAIN = 'rithe.cloud'
         PROJECT_NAME = 'NestJS Mongo'
         SERVICE_NAME = 'API'
+        email = 'ab123@gmail.com'
     }
     parameters {
         choice(name: 'APP_ENV', choices: ['uat','preprod','prod'], description: 'Please choose enviroment to build')
@@ -54,7 +55,7 @@ pipeline{
                 script {
                     sh """
                         ssh root@${SERVER_IP} "apt install -y certbot python3-certbot-nginx && \
-                                              certbot --nginx -d ${DOMAIN} --agree-tos --non-interactive && \
+                                              certbot --nginx -d ${DOMAIN} --email ${email} --agree-tos --non-interactive && \
                                               systemctl reload nginx"
                     """
                 }
