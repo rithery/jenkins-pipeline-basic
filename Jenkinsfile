@@ -128,8 +128,8 @@ pipeline{
                             %0A<b>Status</b>: ${currentBuild.currentResult} \
                             %0A<b>Version</b>: ${APP_ENV}-${BUILD_NUMBER} \
                             %0A<b>Environment</b>: ${APP_ENV} \
-                            %0A<b>Application URL</b>: https://jenkins.rithe.cloud \
                             %0A<b>User Build</b>: ${BUILD_USER} \
+                            %0A<b>Domain</b>: ${DOMAIN} \
                             %0A<b>Release Note</b>: ${Release_Note} "
                 """
             }
