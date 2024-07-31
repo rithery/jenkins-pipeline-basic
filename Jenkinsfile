@@ -2,7 +2,7 @@ pipeline{
     agent any
     environment {
         git_repo = "https://github.com/rithery/nestjs-mongodb-basic"
-        digitalocean_registry = credentials('digitalocean_registry')
+        digitalocean_registry = "registry.digitalocean.com/registry-devops"
         digitalocean_token = credentials('digitalocean_token')
         docker_hub_password = credentials('docker_hub')
     }
