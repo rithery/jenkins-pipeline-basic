@@ -53,11 +53,9 @@ pipeline{
             steps {
                 script {
                     sh """
-                        ssh root@${SERVER_IP} << 'EOF'
-                            DEBIAN_FRONTEND=noninteractive apt-get install -y certbot python3-certbot-nginx
-                            certbot --nginx -d ${DOMAIN} --agree-tos --non-interactive
-                            systemctl reload nginx
-                        EOF
+                        ssh root@${SERVER_IP} "apt install -y certbot python3-certbot-nginx && \
+                                              certbot --nginx -d ${DOMAIN} --agree-tos --non-interactive && \
+                                              systemctl reload nginx"
                     """
                 }
             }
