@@ -7,7 +7,7 @@ pipeline{
         docker_hub_password = credentials('docker_hub')
         telegram_token = credentials('Telegram_Token')
         telegram_chatID = credentials('Telegram_ChatID')
-        cloudflare_email = credentials('rithery11@gmail.com')
+        cloudflare_email = 'rithery11@gmail.com'
         cloudflare_api_key = credentials('cloudflare_api_key')
         SERVER_IP = '165.22.241.82'
         DOMAIN = 'api.rithe.cloud'
