@@ -50,6 +50,23 @@ pipeline{
                 """
             }
         }
+        stage("Configure Nginx") {
+            steps {
+                sh """
+                    ssh root@${SERVER_IP} 'echo "
+                    server {
+                        listen 80;
+                        server_name api.rithe.cloud;
+                        location / {
+                            proxy_set_header Host \$host;
+                            proxy_pass http://localhost:3000;
+                        }
+                    }" > /etc/nginx/sites-available/api.rithe.cloud'
+                    ssh root@${SERVER_IP} 'ln -s /etc/nginx/sites-available/api.rithe.cloud /etc/nginx/sites-enabled/'
+                    ssh root@${SERVER_IP} 'nginx -t && systemctl reload nginx'
+                """
+            }
+        }
         stage("Install Certbot and Setup SSL") {
             steps {
                 script {
