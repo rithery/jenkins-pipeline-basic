@@ -94,7 +94,9 @@ pipeline{
             }
         }
         stage("Waiting for UP DNS"){
-            sleep(120)
+            steps{
+                sleep(120)
+            }
         }
         stage("Install Certbot and Setup SSL") {
             steps {
