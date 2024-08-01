@@ -84,6 +84,8 @@ pipeline{
                     """
                 }
             }
+        }
+        stage("Reload Nginx") {
             steps {
                 script {
                     sh """
