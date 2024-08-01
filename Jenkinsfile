@@ -54,14 +54,13 @@ pipeline{
             steps {
                 script {
                     writeFile file: 'nginx.conf', text: '''
-                        server {
-                            server_name api.rithe.cloud;
-
-                            location / {
-                                proxy_set_header  Host $host;
-                                proxy_pass http://localhost:3000;
-                            }
-                        }
+server {
+    server_name api.rithe.c
+    location / {
+        proxy_set_header  Host $host;
+        proxy_pass http://localhost:3000;
+    }
+}
                     '''
                     sh """
                         scp nginx.conf root@${SERVER_IP}:/etc/nginx/sites-available/api.rithe.cloud
