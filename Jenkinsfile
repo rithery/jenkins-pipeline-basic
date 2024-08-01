@@ -61,7 +61,7 @@ pipeline{
                             %0A<b>Status</b>: ${currentBuild.currentResult} \
                             %0A<b>Version</b>: ${APP_ENV}-${BUILD_NUMBER} \
                             %0A<b>Environment</b>: ${APP_ENV} \
-                            %0A<b>SERVER_IP</b>: ${SERVER_IP}:3000
+                            %0A<b>SERVER_IP</b>: http://${SERVER_IP}:3000
                             %0A<b>User Build</b>: ${BUILD_USER} \
                             %0A<b>Release Note</b>: ${Release_Note} "
                 """
