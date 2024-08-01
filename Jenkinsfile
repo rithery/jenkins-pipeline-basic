@@ -10,7 +10,7 @@ pipeline{
         cloudflare_email = 'rithery11@gmail.com'
         cloudflare_api_key = credentials('cloudflare_api_key')
         SERVER_IP = '165.22.241.82'
-        DOMAIN = 'api.rithe.cloud'
+        DOMAIN = 'new_api.rithe.cloud'
         ROOT_DOMAIN = 'rithe.cloud'
         PROJECT_NAME = 'NestJS Mongo'
         SERVICE_NAME = 'API'
@@ -54,7 +54,7 @@ pipeline{
             steps {
                 script {
                     writeFile file: 'nginx.conf', text: '''server {
-    server_name api.rithe.cloud;
+    server_name ${DOMAIN};
 
     location / {
         proxy_set_header  Host $host;
@@ -62,8 +62,8 @@ pipeline{
     }
 }'''
                     sh """
-                        scp nginx.conf root@${SERVER_IP}:/etc/nginx/sites-available/api.rithe.cloud
-                        ssh root@${SERVER_IP} "ln -sf /etc/nginx/sites-available/api.rithe.cloud /etc/nginx/sites-enabled/"
+                        scp nginx.conf root@${SERVER_IP}:/etc/nginx/sites-available/${DOMAIN}
+                        ssh root@${SERVER_IP} "ln -sf /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/"
                         ssh root@${SERVER_IP} "nginx -t && systemctl reload nginx"
                     """
                 }
