@@ -84,6 +84,13 @@ pipeline{
                     """
                 }
             }
+            steps {
+                script {
+                    sh """
+                        ssh root@${SERVER_IP} "systemctl reload nginx"
+                    """
+                }
+            }
         }
     }
     post{
