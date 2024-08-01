@@ -10,7 +10,7 @@ pipeline{
         cloudflare_email = 'rithery11@gmail.com'
         cloudflare_api_key = credentials('cloudflare_api_key')
         SERVER_IP = '165.22.241.82'
-        DOMAIN = 'myapi.rithe.cloud'
+        DOMAIN = 'app.rithe.cloud'
         ROOT_DOMAIN = 'rithe.cloud'
         PROJECT_NAME = 'NestJS Mongo'
         SERVICE_NAME = 'API'
@@ -93,17 +93,17 @@ pipeline{
                 }
             }
         }
-        stage("Install Certbot and Setup SSL") {
-            steps {
-                script {
-                    sh """
-                        ssh root@${SERVER_IP} "apt install -y certbot python3-certbot-nginx && \
-                                              certbot --nginx -d ${DOMAIN} --email ${email} --agree-tos --non-interactive && \
-                                              systemctl reload nginx"
-                    """
-                }
-            }
-        }
+        // stage("Install Certbot and Setup SSL") {
+        //     steps {
+        //         script {
+        //             sh """
+        //                 ssh root@${SERVER_IP} "apt install -y certbot python3-certbot-nginx && \
+        //                                       certbot --nginx -d ${DOMAIN} --email ${email} --agree-tos --non-interactive && \
+        //                                       systemctl reload nginx"
+        //             """
+        //         }
+        //     }
+        // }
     }
     post{
         always{
