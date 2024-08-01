@@ -10,7 +10,7 @@ pipeline{
         cloudflare_email = 'rithery11@gmail.com'
         cloudflare_api_key = credentials('cloudflare_api_key')
         SERVER_IP = '165.22.241.82'
-        DOMAIN = 'b.rithe.cloud'
+        DOMAIN = 'api.rithe.cloud'
         ROOT_DOMAIN = 'rithe.cloud'
         PROJECT_NAME = 'NestJS Mongo'
         SERVICE_NAME = 'API'
@@ -54,7 +54,7 @@ pipeline{
             steps {
                 script {
                     writeFile file: 'nginx.conf', text: '''server {
-    server_name b.rithe.cloud;
+    server_name api.rithe.cloud;
 
     location / {
         proxy_set_header  Host $host;
@@ -121,7 +121,7 @@ pipeline{
                             %0A<b>Status</b>: ${currentBuild.currentResult} \
                             %0A<b>Version</b>: ${APP_ENV}-${BUILD_NUMBER} \
                             %0A<b>Environment</b>: ${APP_ENV} \
-                            %0A<b>DOMAIN</b>: ${DOMAIN}
+                            %0A<b>DOMAIN</b>: https:/${DOMAIN} \
                             %0A<b>User Build</b>: ${BUILD_USER} \
                             %0A<b>Release Note</b>: ${Release_Note} "
                 """
