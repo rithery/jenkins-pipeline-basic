@@ -69,17 +69,6 @@ pipeline{
                 }
             }
         }
-        stage("Install Certbot and Setup SSL") {
-            steps {
-                script {
-                    sh """
-                        ssh root@${SERVER_IP} "apt install -y certbot python3-certbot-nginx && \
-                                              certbot --nginx -d ${DOMAIN} --email ${email} --agree-tos --non-interactive && \
-                                              systemctl reload nginx"
-                    """
-                }
-            }
-        }
         stage("Configure Cloudflare") {
             steps {
                 script {
@@ -100,6 +89,17 @@ pipeline{
                             -H "X-Auth-Key: ${cloudflare_api_key}" \
                             -H "Content-Type: application/json" \
                             --data '{"type":"A","name":"${DOMAIN}","content":"${SERVER_IP}","ttl":120,"proxied":false}'
+                    """
+                }
+            }
+        }
+        stage("Install Certbot and Setup SSL") {
+            steps {
+                script {
+                    sh """
+                        ssh root@${SERVER_IP} "apt install -y certbot python3-certbot-nginx && \
+                                              certbot --nginx -d ${DOMAIN} --email ${email} --agree-tos --non-interactive && \
+                                              systemctl reload nginx"
                     """
                 }
             }
