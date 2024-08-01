@@ -53,15 +53,17 @@ pipeline{
         stage("Configure Nginx") {
             steps {
                 script {
-                    writeFile file: 'nginx.conf', text: '''
+                    writeFile file: 'nginx.conf', 
+text: 
+'''
 server {
-    server_name api.rithe.c
+    server_name api.rithe.cloud;
     location / {
         proxy_set_header  Host $host;
         proxy_pass http://localhost:3000;
     }
 }
-                    '''
+'''
                     sh """
                         scp nginx.conf root@${SERVER_IP}:/etc/nginx/sites-available/api.rithe.cloud
                         ssh root@${SERVER_IP} "ln -sf /etc/nginx/sites-available/api.rithe.cloud /etc/nginx/sites-enabled/"
