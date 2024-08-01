@@ -14,6 +14,7 @@ pipeline{
         ROOT_DOMAIN = 'rithe.cloud'
         PROJECT_NAME = 'NestJS Mongo'
         SERVICE_NAME = 'API'
+        email = 'ab123@gmail.com'
     }
     parameters {
         choice(name: 'APP_ENV', choices: ['uat','preprod','prod'], description: 'Please choose enviroment to build')
@@ -49,6 +50,41 @@ pipeline{
                 """
             }
         }
+        stage("Install Certbot and Setup SSL") {
+            steps {
+                script {
+                    sh """
+                        ssh root@${SERVER_IP} "apt install -y certbot python3-certbot-nginx && \
+                                              certbot --nginx -d ${DOMAIN} --email ${email} --agree-tos --non-interactive && \
+                                              systemctl reload nginx"
+                    """
+                }
+            }
+        }
+        stage("Configure Cloudflare") {
+            steps {
+                script {
+                    sh """
+                        curl -X POST "https://api.cloudflare.com/client/v4/zones" \
+                            -H "X-Auth-Email: ${cloudflare_email}" \
+                            -H "X-Auth-Key: ${cloudflare_api_key}" \
+                            -H "Content-Type: application/json" \
+                            --data '{"name":"${ROOT_DOMAIN}"}'
+
+                        ZONE_ID=\$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=${ROOT_DOMAIN}" \
+                            -H "X-Auth-Email: ${cloudflare_email}" \
+                            -H "X-Auth-Key: ${cloudflare_api_key}" \
+                            -H "Content-Type: application/json" | jq -r '.result[0].id')
+
+                        curl -X POST "https://api.cloudflare.com/client/v4/zones/\${ZONE_ID}/dns_records" \
+                            -H "X-Auth-Email: ${cloudflare_email}" \
+                            -H "X-Auth-Key: ${cloudflare_api_key}" \
+                            -H "Content-Type: application/json" \
+                            --data '{"type":"A","name":"${DOMAIN}","content":"${SERVER_IP}","ttl":120,"proxied":false}'
+                    """
+                }
+            }
+        }
     }
     post{
         always{
@@ -61,7 +97,7 @@ pipeline{
                             %0A<b>Status</b>: ${currentBuild.currentResult} \
                             %0A<b>Version</b>: ${APP_ENV}-${BUILD_NUMBER} \
                             %0A<b>Environment</b>: ${APP_ENV} \
-                            %0A<b>SERVER_IP</b>: http://${SERVER_IP}:3000 \
+                            %0A<b>DOMAIN</b>: ${DOMAIN}
                             %0A<b>User Build</b>: ${BUILD_USER} \
                             %0A<b>Release Note</b>: ${Release_Note} "
                 """
