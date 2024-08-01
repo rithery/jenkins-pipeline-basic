@@ -10,7 +10,7 @@ pipeline{
         cloudflare_email = 'rithery11@gmail.com'
         cloudflare_api_key = credentials('cloudflare_api_key')
         SERVER_IP = '165.22.241.82'
-        DOMAIN = 'new_api.rithe.cloud'
+        DOMAIN = 'myapi.rithe.cloud'
         ROOT_DOMAIN = 'rithe.cloud'
         PROJECT_NAME = 'NestJS Mongo'
         SERVICE_NAME = 'API'
