@@ -50,13 +50,23 @@ pipeline{
                 """
             }
         }
-        stage("Install Certbot and Setup SSL") {
+        stage("Configure Nginx") {
             steps {
                 script {
+                    writeFile file: 'nginx.conf', text: '''
+                        server {
+                            server_name api.rithe.cloud;
+
+                            location / {
+                                proxy_set_header  Host $host;
+                                proxy_pass http://localhost:3000;
+                            }
+                        }
+                    '''
                     sh """
-                        ssh root@${SERVER_IP} "apt install -y certbot python3-certbot-nginx && \
-                                              certbot --nginx -d ${DOMAIN} --email ${email} --agree-tos --non-interactive && \
-                                              systemctl reload nginx"
+                        scp nginx.conf root@${SERVER_IP}:/etc/nginx/sites-available/api.rithe.cloud
+                        ssh root@${SERVER_IP} "ln -sf /etc/nginx/sites-available/api.rithe.cloud /etc/nginx/sites-enabled/"
+                        ssh root@${SERVER_IP} "nginx -t && systemctl reload nginx"
                     """
                 }
             }
